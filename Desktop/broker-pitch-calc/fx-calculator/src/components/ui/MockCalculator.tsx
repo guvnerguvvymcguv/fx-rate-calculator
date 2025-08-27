@@ -55,13 +55,13 @@ export function MockCalculator() {
             </div>
           </div>
           <div className="space-y-1">
-            <Label className="text-xs text-purple-200">Historical</Label>
+            <Label className="text-xs text-purple-200 opacity-0">Hidden</Label>
             <Button
               variant="outline"
               size="sm"
               className="border-white/20 text-purple-200 hover:bg-white/10 text-xs h-8 w-full px-1"
             >
-              Rate
+              Historical Rate
             </Button>
           </div>
         </div>
@@ -124,7 +124,7 @@ export function MockCalculator() {
         </div>
         
         {/* Calculate Button */}
-        <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-2 rounded-lg shadow-lg">
+        <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-2 rounded-lg shadow-lg hover:shadow-purple-400/60 hover:shadow-[0_0_20px_rgba(147,51,234,0.6)] transition-all duration-200">
           <Calculator className="mr-2 h-4 w-4" />
           Calculate Savings
         </Button>
@@ -143,7 +143,7 @@ export function MockCalculator() {
                 <p className="text-xs text-purple-300">Price Difference</p>
                 <p className="text-sm font-bold text-purple-100">+0.0010</p>
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1 text-right">
                 <p className="text-xs text-purple-300">Pips</p>
                 <p className="text-sm font-bold text-purple-100">10.0 pips</p>
               </div>
@@ -159,7 +159,7 @@ export function MockCalculator() {
                 <p className="text-xs text-purple-300">Cost With Competitor</p>
                 <p className="text-sm font-bold text-red-400">369276.22</p>
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1 text-right">
                 <p className="text-xs text-purple-300">Cost With Us</p>
                 <p className="text-sm font-bold text-green-400">369003.69</p>
               </div>
@@ -171,7 +171,7 @@ export function MockCalculator() {
                 <p className="text-xs text-purple-300">Savings Per Trade</p>
                 <p className="text-sm font-bold text-green-400">272.53</p>
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1 text-right">
                 <p className="text-xs text-purple-300">Annual Savings</p>
                 <p className="text-base font-bold text-green-400">14171.49</p>
               </div>
