@@ -173,7 +173,7 @@ export default function CalculatorPage() {
                   onChange={(e) => calculator.setCompetitorName(e.target.value)}
                   onKeyPress={handleKeyPress}
                   className="bg-white/10 border-white/20 text-purple-100 placeholder:text-purple-300/60"
-                  placeholder="Enter competitor name (e.g. OrbitFX)"
+                  placeholder="Enter competitor name"
                 />
               </div>
 
