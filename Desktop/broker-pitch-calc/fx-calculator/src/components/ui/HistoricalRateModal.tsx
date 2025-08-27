@@ -33,12 +33,25 @@ export const HistoricalRateModal: React.FC<HistoricalRateModalProps> = ({
   const [timeInput, setTimeInput] = useState('');
   const [searchedRate, setSearchedRate] = useState<number | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [customChartData, setCustomChartData] = useState<ChartDataPoint[] | null>(null);
 
   if (!isOpen) return null;
 
   const handlePriceSelect = (price: number) => {
     onPriceSelect(price);
     onClose(); // Close modal after selection
+  };
+
+  // Helper function to get data centered around a specific date
+  const getDataAroundDate = (targetTimestamp: number, days: number): ChartDataPoint[] => {
+    const fullData = MOCK_CHART_DATA[selectedPair] || [];
+    const halfDays = Math.floor(days / 2);
+    const startTime = targetTimestamp - (halfDays * 24 * 60 * 60 * 1000);
+    const endTime = targetTimestamp + (halfDays * 24 * 60 * 60 * 1000);
+    
+    return fullData.filter(point => 
+      point.timestamp >= startTime && point.timestamp <= endTime
+    );
   };
 
   // Handle date/time search
@@ -82,8 +95,11 @@ export const HistoricalRateModal: React.FC<HistoricalRateModalProps> = ({
       // Switch to weekly view and center on the searched date
       onTimeframeChange('5D');
       
-      // Close date picker
-      setShowDatePicker(false);
+      // Set custom chart data centered around the searched date
+      const centeredData = getDataAroundDate(targetTimestamp, 5);
+      setCustomChartData(centeredData);
+      
+      // Keep date picker open - remove this line: setShowDatePicker(false);
     } else {
       alert('No data available for the selected date/time');
     }
@@ -152,7 +168,7 @@ export const HistoricalRateModal: React.FC<HistoricalRateModalProps> = ({
       />
       
       {/* Modal Content */}
-      <div className="relative bg-[#10051A] border border-white/20 rounded-xl shadow-2xl max-w-5xl w-full mx-4 max-h-[90vh] overflow-hidden">
+      <div className="relative bg-[#10051A] border border-white/20 rounded-xl shadow-2xl max-w-5xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/20">
           <h2 className="text-xl font-bold text-purple-200">
@@ -362,7 +378,7 @@ export const HistoricalRateModal: React.FC<HistoricalRateModalProps> = ({
         <div className="p-6 flex justify-center">
           <div className="w-full max-w-4xl">
             <HistoricalChart
-              data={chartData}
+              data={customChartData || chartData}
               onPriceSelect={handlePriceSelect}
               selectedPair={selectedPair}
               width={800}
@@ -375,7 +391,7 @@ export const HistoricalRateModal: React.FC<HistoricalRateModalProps> = ({
         <div className="p-6 border-t border-white/20 bg-white/5">
           <div className="flex items-center justify-between">
             <div className="text-sm text-purple-300">
-              Showing {chartData.length} data points for {selectedPair.slice(0, 3)}/{selectedPair.slice(3)} ({selectedTimeframe})
+              Showing {(customChartData || chartData).length} data points for {selectedPair.slice(0, 3)}/{selectedPair.slice(3)} ({selectedTimeframe})
             </div>
             <Button
               onClick={onClose}
