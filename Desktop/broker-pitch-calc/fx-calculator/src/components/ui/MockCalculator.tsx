@@ -143,11 +143,11 @@ export function MockCalculator() {
                 <p className="text-xs text-purple-300">Price Difference</p>
                 <p className="text-sm font-bold text-purple-100">+0.0010</p>
               </div>
-              <div className="space-y-1 text-right">
+              <div className="space-y-1 text-center">
                 <p className="text-xs text-purple-300">Pips</p>
                 <p className="text-sm font-bold text-purple-100">10.0 pips</p>
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1 text-right">
                 <p className="text-xs text-purple-300">% Savings</p>
                 <p className="text-sm font-bold text-green-400">0.07%</p>
               </div>
@@ -159,7 +159,7 @@ export function MockCalculator() {
                 <p className="text-xs text-purple-300">Cost With Competitor</p>
                 <p className="text-sm font-bold text-red-400">369276.22</p>
               </div>
-              <div className="space-y-1 text-right">
+              <div className="space-y-1 text-center">
                 <p className="text-xs text-purple-300">Cost With Us</p>
                 <p className="text-sm font-bold text-green-400">369003.69</p>
               </div>
@@ -171,7 +171,7 @@ export function MockCalculator() {
                 <p className="text-xs text-purple-300">Savings Per Trade</p>
                 <p className="text-sm font-bold text-green-400">272.53</p>
               </div>
-              <div className="space-y-1 text-right">
+              <div className="space-y-1 text-center">
                 <p className="text-xs text-purple-300">Annual Savings</p>
                 <p className="text-base font-bold text-green-400">14171.49</p>
               </div>
