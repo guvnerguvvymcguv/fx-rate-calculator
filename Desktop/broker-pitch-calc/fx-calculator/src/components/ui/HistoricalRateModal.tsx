@@ -34,6 +34,7 @@ export const HistoricalRateModal: React.FC<HistoricalRateModalProps> = ({
   const [searchedRate, setSearchedRate] = useState<number | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [customChartData, setCustomChartData] = useState<ChartDataPoint[] | null>(null);
+  const [selectedTimestamp, setSelectedTimestamp] = useState<number | null>(null);
 
   if (!isOpen) return null;
 
@@ -43,8 +44,8 @@ export const HistoricalRateModal: React.FC<HistoricalRateModalProps> = ({
   };
 
   // Helper function to get data centered around a specific date
-  const getDataAroundDate = (targetTimestamp: number, days: number): ChartDataPoint[] => {
-    const fullData = MOCK_CHART_DATA[selectedPair] || [];
+  const getDataAroundDate = (targetTimestamp: number, days: number, pairName: string): ChartDataPoint[] => {
+    const fullData = MOCK_CHART_DATA[pairName] || [];
     const halfDays = Math.floor(days / 2);
     const startTime = targetTimestamp - (halfDays * 24 * 60 * 60 * 1000);
     const endTime = targetTimestamp + (halfDays * 24 * 60 * 60 * 1000);
@@ -52,6 +53,43 @@ export const HistoricalRateModal: React.FC<HistoricalRateModalProps> = ({
     return fullData.filter(point => 
       point.timestamp >= startTime && point.timestamp <= endTime
     );
+  };
+
+  // Reset function to clear custom selections
+  const handleReset = () => {
+    setCustomChartData(null);
+    setSelectedDate(null);
+    setTimeInput('');
+    setSearchedRate(null);
+    setSelectedTimestamp(null);
+  };
+
+  // Handle pair change - update custom data if we have a selected timestamp
+  const handlePairChange = (pair: string) => {
+    onPairChange(pair);
+    
+    // If we have a custom timestamp selected, update the custom data for the new pair
+    if (selectedTimestamp) {
+      const centeredData = getDataAroundDate(selectedTimestamp, 5, pair);
+      setCustomChartData(centeredData);
+      
+      // Update the searched rate for the new pair
+      const fullData = MOCK_CHART_DATA[pair] || [];
+      const closestPoint = getPriceAtTime(fullData, selectedTimestamp);
+      if (closestPoint) {
+        setSearchedRate(closestPoint.price);
+      }
+    }
+  };
+
+  // Handle timeframe change - clear custom data if not 5D
+  const handleTimeframeChange = (timeframe: string) => {
+    onTimeframeChange(timeframe);
+    
+    // If manually changing timeframe (and it's not 5D), clear custom data
+    if (timeframe !== '5D') {
+      setCustomChartData(null);
+    }
   };
 
   // Handle date/time search
@@ -91,12 +129,13 @@ export const HistoricalRateModal: React.FC<HistoricalRateModalProps> = ({
     
     if (closestPoint) {
       setSearchedRate(closestPoint.price);
+      setSelectedTimestamp(targetTimestamp);
       
       // Switch to weekly view and center on the searched date
       onTimeframeChange('5D');
       
       // Set custom chart data centered around the searched date
-      const centeredData = getDataAroundDate(targetTimestamp, 5);
+      const centeredData = getDataAroundDate(targetTimestamp, 5, selectedPair);
       setCustomChartData(centeredData);
       
       // Keep date picker open - remove this line: setShowDatePicker(false);
@@ -196,7 +235,7 @@ export const HistoricalRateModal: React.FC<HistoricalRateModalProps> = ({
                 {availablePairs.map((pair) => (
                   <button
                     key={pair}
-                    onClick={() => onPairChange(pair)}
+                    onClick={() => handlePairChange(pair)}
                     className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
                       selectedPair === pair
                         ? 'bg-purple-600 text-white'
@@ -218,7 +257,7 @@ export const HistoricalRateModal: React.FC<HistoricalRateModalProps> = ({
                 {TIMEFRAMES.map((tf) => (
                   <button
                     key={tf.label}
-                    onClick={() => onTimeframeChange(tf.label)}
+                    onClick={() => handleTimeframeChange(tf.label)}
                     className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
                       selectedTimeframe === tf.label
                         ? 'bg-purple-600 text-white'
@@ -242,6 +281,18 @@ export const HistoricalRateModal: React.FC<HistoricalRateModalProps> = ({
                 <Calendar className="h-4 w-4 mr-1" />
                 Date/Time Search
               </Button>
+              
+              {/* Reset Button - only show if custom data is active */}
+              {customChartData && (
+                <Button
+                  onClick={handleReset}
+                  variant="outline"
+                  size="sm"
+                  className="border-red-500/20 text-red-300 hover:bg-red-500/10"
+                >
+                  Reset View
+                </Button>
+              )}
             </div>
           </div>
 
