@@ -66,10 +66,10 @@ export function MockCalculator() {
           </div>
         </div>
 
-        {/* Competitor Name and Comparison Date - Row 2 */}
+        {/* Client Name and Comparison Date - Row 2 */}
         <div className="grid grid-cols-2 gap-2">
           <div className="space-y-1">
-            <Label className="text-xs text-purple-200">Competitor Name</Label>
+            <Label className="text-xs text-purple-200">Client Name</Label>
             <div className="bg-white/10 border-white/20 text-purple-100 p-1.5 rounded-lg text-sm">
               ExampleBroker.com
             </div>

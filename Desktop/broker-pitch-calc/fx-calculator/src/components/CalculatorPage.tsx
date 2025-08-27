@@ -161,10 +161,10 @@ export default function CalculatorPage() {
                 />
               </div>
 
-              {/* Competitor Name Input */}
+              {/* Client Name Input */}
               <div className="space-y-2">
                 <Label htmlFor="competitor-name" className="text-sm font-medium text-purple-200">
-                  Competitor Name
+                  Client Name
                 </Label>
                 <Input
                   id="competitor-name"

@@ -1,8 +1,8 @@
-import React from 'react';
-import { X } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Calendar, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from './button';
 import { HistoricalChart } from './HistoricalChart';
-import { type ChartDataPoint, TIMEFRAMES } from '../../constants/mockChartData';
+import { type ChartDataPoint, TIMEFRAMES, MOCK_CHART_DATA, getPriceAtTime } from '../../constants/mockChartData';
 
 interface HistoricalRateModalProps {
   isOpen: boolean;
@@ -27,11 +27,120 @@ export const HistoricalRateModal: React.FC<HistoricalRateModalProps> = ({
   onPairChange,
   onTimeframeChange
 }) => {
+  // New state for date/time picker
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [timeInput, setTimeInput] = useState('');
+  const [searchedRate, setSearchedRate] = useState<number | null>(null);
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+
   if (!isOpen) return null;
 
   const handlePriceSelect = (price: number) => {
     onPriceSelect(price);
     onClose(); // Close modal after selection
+  };
+
+  // Handle date/time search
+  const handleDateTimeSearch = () => {
+    if (!selectedDate || !timeInput) return;
+
+    // Parse time input (supports both 12 and 24 hour formats)
+    const timeRegex = /^(\d{1,2}):?(\d{2})?\s*(am|pm|AM|PM)?$/;
+    const timeMatch = timeInput.match(timeRegex);
+    
+    if (!timeMatch) {
+      alert('Please enter a valid time format (e.g., 13:00, 1:00 PM, or 1pm)');
+      return;
+    }
+
+    let hours = parseInt(timeMatch[1]);
+    const minutes = parseInt(timeMatch[2] || '0');
+    const period = timeMatch[3]?.toLowerCase();
+
+    // Convert to 24-hour format
+    if (period === 'pm' && hours !== 12) {
+      hours += 12;
+    } else if (period === 'am' && hours === 12) {
+      hours = 0;
+    }
+
+    // Create target timestamp
+    const targetDate = new Date(selectedDate);
+    targetDate.setHours(hours, minutes, 0, 0);
+    const targetTimestamp = targetDate.getTime();
+
+    // Get full dataset for the selected pair (not filtered by timeframe)
+    const fullData = MOCK_CHART_DATA[selectedPair] || [];
+    
+    // Find closest price point
+    const closestPoint = getPriceAtTime(fullData, targetTimestamp);
+    
+    if (closestPoint) {
+      setSearchedRate(closestPoint.price);
+      
+      // Switch to weekly view and center on the searched date
+      onTimeframeChange('5D');
+      
+      // Close date picker
+      setShowDatePicker(false);
+    } else {
+      alert('No data available for the selected date/time');
+    }
+  };
+
+  // Calendar helper functions
+  const getDaysInMonth = (date: Date) => {
+    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+  };
+
+  const getFirstDayOfMonth = (date: Date) => {
+    return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+  };
+
+  const formatDateDisplay = (date: Date) => {
+    return date.toLocaleDateString('en-GB', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+  };
+
+  // Generate calendar days
+  const generateCalendarDays = () => {
+    const daysInMonth = getDaysInMonth(currentMonth);
+    const firstDay = getFirstDayOfMonth(currentMonth);
+    const days = [];
+
+    // Empty cells for days before the first day of the month
+    for (let i = 0; i < firstDay; i++) {
+      days.push(null);
+    }
+
+    // Days of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+      days.push(day);
+    }
+
+    return days;
+  };
+
+  const handleDateSelect = (day: number) => {
+    const newDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+    setSelectedDate(newDate);
+  };
+
+  const navigateMonth = (direction: 'prev' | 'next') => {
+    setCurrentMonth(prev => {
+      const newMonth = new Date(prev);
+      if (direction === 'prev') {
+        newMonth.setMonth(prev.getMonth() - 1);
+      } else {
+        newMonth.setMonth(prev.getMonth() + 1);
+      }
+      return newMonth;
+    });
   };
 
   return (
@@ -105,12 +214,146 @@ export const HistoricalRateModal: React.FC<HistoricalRateModalProps> = ({
                 ))}
               </div>
             </div>
+
+            {/* NEW: Calendar Button */}
+            <div className="flex items-center gap-2 ml-4">
+              <Button
+                onClick={() => setShowDatePicker(!showDatePicker)}
+                variant="outline"
+                size="sm"
+                className="border-white/20 text-purple-200 hover:bg-white/10"
+              >
+                <Calendar className="h-4 w-4 mr-1" />
+                Date/Time Search
+              </Button>
+            </div>
           </div>
+
+          {/* NEW: Date/Time Picker */}
+          {showDatePicker && (
+            <div className="mt-4 p-4 bg-white/5 border border-white/20 rounded-lg">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {/* Calendar */}
+                <div>
+                  <h4 className="text-sm font-medium text-purple-200 mb-3">Select Date</h4>
+                  
+                  {/* Month Navigation */}
+                  <div className="flex items-center justify-between mb-3">
+                    <Button
+                      onClick={() => navigateMonth('prev')}
+                      variant="ghost"
+                      size="sm"
+                      className="text-purple-200 hover:bg-white/10"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <span className="text-purple-200 font-medium">
+                      {currentMonth.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
+                    </span>
+                    <Button
+                      onClick={() => navigateMonth('next')}
+                      variant="ghost"
+                      size="sm"
+                      className="text-purple-200 hover:bg-white/10"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+
+                  {/* Calendar Grid */}
+                  <div className="grid grid-cols-7 gap-1 text-xs">
+                    {/* Day headers */}
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                      <div key={day} className="p-2 text-center text-purple-300 font-medium">
+                        {day}
+                      </div>
+                    ))}
+                    
+                    {/* Calendar days */}
+                    {generateCalendarDays().map((day, index) => (
+                      <div key={index} className="relative">
+                        {day ? (
+                          <button
+                            onClick={() => handleDateSelect(day)}
+                            className={`w-full p-2 text-center rounded transition-colors ${
+                              selectedDate && 
+                              selectedDate.getDate() === day && 
+                              selectedDate.getMonth() === currentMonth.getMonth() &&
+                              selectedDate.getFullYear() === currentMonth.getFullYear()
+                                ? 'bg-purple-600 text-white'
+                                : 'text-purple-200 hover:bg-white/10'
+                            }`}
+                          >
+                            {day}
+                          </button>
+                        ) : (
+                          <div className="p-2"></div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Time Input and Search */}
+                <div>
+                  <h4 className="text-sm font-medium text-purple-200 mb-3">Time & Search</h4>
+                  
+                  {selectedDate && (
+                    <div className="mb-3 p-2 bg-purple-600/10 rounded border border-purple-600/20">
+                      <div className="text-xs text-purple-300">Selected Date:</div>
+                      <div className="text-sm text-purple-200 font-medium">
+                        {formatDateDisplay(selectedDate)}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs text-purple-300 mb-1">
+                        Time (e.g., 13:00, 1:00 PM, 1pm)
+                      </label>
+                      <input
+                        type="text"
+                        value={timeInput}
+                        onChange={(e) => setTimeInput(e.target.value)}
+                        placeholder="13:00"
+                        className="w-full p-2 bg-white/10 border border-white/20 rounded text-purple-200 placeholder-purple-400"
+                      />
+                    </div>
+
+                    <Button
+                      onClick={handleDateTimeSearch}
+                      disabled={!selectedDate || !timeInput}
+                      className="w-full bg-purple-600 hover:bg-purple-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Search className="h-4 w-4 mr-1" />
+                      Find Rate
+                    </Button>
+
+                    {/* Display searched rate */}
+                    {searchedRate && (
+                      <div className="mt-3 p-3 bg-green-600/10 border border-green-600/20 rounded">
+                        <div className="text-xs text-green-300 mb-1">Rate Found:</div>
+                        <div className="text-lg font-bold text-green-400">{searchedRate.toFixed(4)}</div>
+                        <Button
+                          onClick={() => handlePriceSelect(searchedRate)}
+                          size="sm"
+                          className="mt-2 w-full bg-green-600 hover:bg-green-700 text-white"
+                        >
+                          Use This Rate
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Instructions */}
           <div className="mt-4 p-3 bg-purple-600/10 rounded-lg border border-purple-600/20">
             <p className="text-sm text-purple-300">
-              💡 <strong>How to use:</strong> Hover over the chart to see historical rates, then click on any point to select that rate for your calculation.
+              💡 <strong>How to use:</strong> Use the Date/Time Search for specific rates, or hover over the chart to see historical rates and click on any point to select that rate for your calculation.
             </p>
           </div>
         </div>
