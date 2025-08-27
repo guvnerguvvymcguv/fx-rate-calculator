@@ -14,12 +14,15 @@ interface CalculationResults {
 interface UseFXCalculatorReturn {
   yourRate: string;
   competitorRate: string;
+  competitorName: string;
+  comparisonDate: string;
   tradeAmount: string;
   tradesPerYear: string;
   selectedPips: number;
   results: CalculationResults | null;
   setYourRate: (rate: string) => void;
   setCompetitorRate: (rate: string) => void;
+  setCompetitorName: (name: string) => void;
   setTradeAmount: (amount: string) => void;
   setTradesPerYear: (trades: string) => void;
   setSelectedPips: (pips: number) => void;
@@ -34,10 +37,14 @@ interface UseFXCalculatorReturn {
 export const useFXCalculator = (): UseFXCalculatorReturn => {
   const [yourRate, setYourRate] = useState<string>('');
   const [competitorRate, setCompetitorRate] = useState<string>('');
+  const [competitorName, setCompetitorName] = useState<string>('');
   const [tradeAmount, setTradeAmount] = useState<string>('');
   const [tradesPerYear, setTradesPerYear] = useState<string>('');
   const [selectedPips, setSelectedPips] = useState<number>(0);
   const [results, setResults] = useState<CalculationResults | null>(null);
+
+  // Auto-populate today's date
+  const comparisonDate = new Date().toLocaleDateString('en-US');
 
   const calculateSavings = (): CalculationResults => {
     let yourRateNum = parseFloat(yourRate);
@@ -84,6 +91,18 @@ export const useFXCalculator = (): UseFXCalculatorReturn => {
       isAdvantage: savingsPerTrade > 0
     };
 
+    // TODO: Log all data for future Salesforce integration
+    const comparisonData = {
+      yourRate: yourRateNum.toFixed(4),
+      competitorRate: competitorRate,
+      competitorName: competitorName,
+      tradeAmount: amount,
+      tradesPerYear: trades,
+      comparisonDate: comparisonDate,
+      results: calculationResults
+    };
+    console.log('Comparison data logged:', comparisonData);
+
     setResults(calculationResults);
     return calculationResults;
   };
@@ -91,6 +110,7 @@ export const useFXCalculator = (): UseFXCalculatorReturn => {
   const resetCalculator = (): void => {
     setYourRate('');
     setCompetitorRate('');
+    setCompetitorName('');
     setTradeAmount('');
     setTradesPerYear('');
     setSelectedPips(0);
@@ -107,6 +127,8 @@ export const useFXCalculator = (): UseFXCalculatorReturn => {
     // State
     yourRate,
     competitorRate,
+    competitorName,
+    comparisonDate,
     tradeAmount,
     tradesPerYear,
     selectedPips,
@@ -116,6 +138,10 @@ export const useFXCalculator = (): UseFXCalculatorReturn => {
     setYourRate: updateYourRate,
     setCompetitorRate: (rate: string): void => {
       setCompetitorRate(rate);
+      if (results) setResults(null);
+    },
+    setCompetitorName: (name: string): void => {
+      setCompetitorName(name);
       if (results) setResults(null);
     },
     setTradeAmount: (amount: string): void => {

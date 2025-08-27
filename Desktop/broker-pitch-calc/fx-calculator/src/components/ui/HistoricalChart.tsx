@@ -17,13 +17,40 @@ export const HistoricalChart: React.FC<HistoricalChartProps> = ({
   height = 400
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
   const [hoveredPoint, setHoveredPoint] = useState<ChartDataPoint | null>(null);
+  const [canvasSize, setCanvasSize] = useState({ width, height });
 
-  // Chart padding and dimensions
-  const padding = { top: 20, right: 60, bottom: 40, left: 60 };
-  const chartWidth = width - padding.left - padding.right;
-  const chartHeight = height - padding.top - padding.bottom;
+  // Update canvas size based on container width
+  useEffect(() => {
+    const updateSize = () => {
+      if (containerRef.current) {
+        const containerWidth = containerRef.current.offsetWidth;
+        const isMobile = containerWidth < 768;
+        
+        const newWidth = Math.min(containerWidth - 32, width); // 32px for padding
+        const newHeight = isMobile ? Math.max(250, newWidth * 0.6) : height;
+        
+        setCanvasSize({ width: newWidth, height: newHeight });
+      }
+    };
+
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, [width, height]);
+
+  // Responsive padding and dimensions
+  const isMobile = canvasSize.width < 768;
+  const padding = { 
+    top: 20, 
+    right: isMobile ? 40 : 60, 
+    bottom: isMobile ? 30 : 40, 
+    left: isMobile ? 40 : 60 
+  };
+  const chartWidth = canvasSize.width - padding.left - padding.right;
+  const chartHeight = canvasSize.height - padding.top - padding.bottom;
 
   // Calculate min/max values for scaling
   const prices = data.map(d => d.price);
@@ -86,32 +113,32 @@ const getPriceFromY = (y: number): number => {
     if (!ctx) return;
 
     // Clear canvas
-    ctx.clearRect(0, 0, width, height);
+    ctx.clearRect(0, 0, canvasSize.width, canvasSize.height);
 
     // Set up styling
     ctx.fillStyle = '#10051A';
-    ctx.fillRect(0, 0, width, height);
+    ctx.fillRect(0, 0, canvasSize.width, canvasSize.height);
 
     // Draw grid lines
     ctx.strokeStyle = '#ffffff20';
     ctx.lineWidth = 1;
 
     // Horizontal grid lines (price levels)
-    const priceSteps = 5;
+    const priceSteps = isMobile ? 3 : 5;
     for (let i = 0; i <= priceSteps; i++) {
       const price = minPrice - priceBuffer + (i / priceSteps) * (priceRange + 2 * priceBuffer);
       const y = getCanvasY(price);
       
       ctx.beginPath();
       ctx.moveTo(padding.left, y);
-      ctx.lineTo(width - padding.right, y);
+      ctx.lineTo(canvasSize.width - padding.right, y);
       ctx.stroke();
 
       // Price labels
       ctx.fillStyle = '#C7B3FF80';
-      ctx.font = '12px system-ui';
+      ctx.font = `${isMobile ? 10 : 12}px system-ui`;
       ctx.textAlign = 'right';
-      ctx.fillText(price.toFixed(4), padding.left - 10, y + 4);
+      ctx.fillText(price.toFixed(4), padding.left - 5, y + 4);
     }
 
     // Draw price line
@@ -145,13 +172,13 @@ const getPriceFromY = (y: number): number => {
       // Vertical line
       ctx.beginPath();
       ctx.moveTo(pointX, padding.top);
-      ctx.lineTo(pointX, height - padding.bottom);
+      ctx.lineTo(pointX, canvasSize.height - padding.bottom);
       ctx.stroke();
 
       // Horizontal line
       ctx.beginPath();
       ctx.moveTo(padding.left, pointY);
-      ctx.lineTo(width - padding.right, pointY);
+      ctx.lineTo(canvasSize.width - padding.right, pointY);
       ctx.stroke();
 
       ctx.setLineDash([]);
@@ -164,7 +191,7 @@ const getPriceFromY = (y: number): number => {
 
       // Tooltip
       const tooltipText = `${formatChartDate(hoveredPoint.timestamp)} - ${hoveredPoint.price.toFixed(4)}`;
-      ctx.font = '14px system-ui';
+      ctx.font = `${isMobile ? 12 : 14}px system-ui`;
       ctx.fillStyle = '#ffffff';
       
       const textMetrics = ctx.measureText(tooltipText);
@@ -175,7 +202,7 @@ const getPriceFromY = (y: number): number => {
       let tooltipY = mousePos.y - 30;
 
       // Keep tooltip within canvas bounds
-      if (tooltipX + tooltipWidth > width) tooltipX = mousePos.x - tooltipWidth - 10;
+      if (tooltipX + tooltipWidth > canvasSize.width) tooltipX = mousePos.x - tooltipWidth - 10;
       if (tooltipY < 0) tooltipY = mousePos.y + 30;
 
       // Tooltip background
@@ -204,8 +231,8 @@ const getPriceFromY = (y: number): number => {
     setMousePos({ x, y });
 
     // Only show crosshair if mouse is within chart area
-    if (x >= padding.left && x <= width - padding.right && 
-        y >= padding.top && y <= height - padding.bottom) {
+    if (x >= padding.left && x <= canvasSize.width - padding.right && 
+        y >= padding.top && y <= canvasSize.height - padding.bottom) {
       const closestPoint = findClosestPoint(x);
       setHoveredPoint(closestPoint);
     } else {
@@ -229,29 +256,29 @@ const getPriceFromY = (y: number): number => {
   // Redraw chart when data changes or mouse moves
   useEffect(() => {
     drawChart();
-  }, [data, mousePos, hoveredPoint]);
+  }, [data, mousePos, hoveredPoint, canvasSize]);
 
   return (
-    <div className="relative">
+    <div ref={containerRef} className="relative w-full">
       <canvas
         ref={canvasRef}
-        width={width}
-        height={height}
+        width={canvasSize.width}
+        height={canvasSize.height}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         onClick={handleClick}
-        className="cursor-crosshair border border-white/20 rounded-lg"
+        className="cursor-crosshair border border-white/20 rounded-lg max-w-full"
         style={{ backgroundColor: '#10051A' }}
       />
       
       {/* Pair label */}
-      <div className="absolute top-4 left-4 text-purple-300 font-semibold text-lg">
+      <div className={`absolute top-4 left-4 text-purple-300 font-semibold ${isMobile ? 'text-base' : 'text-lg'}`}>
         {selectedPair}
       </div>
       
       {/* Click instruction */}
       {hoveredPoint && (
-        <div className="absolute bottom-4 right-4 text-purple-300 text-sm">
+        <div className={`absolute bottom-4 right-4 text-purple-300 ${isMobile ? 'text-xs' : 'text-sm'}`}>
           Click to select rate
         </div>
       )}

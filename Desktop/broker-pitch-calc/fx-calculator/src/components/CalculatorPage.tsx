@@ -161,6 +161,32 @@ export default function CalculatorPage() {
                 />
               </div>
 
+              {/* Competitor Name Input */}
+              <div className="space-y-2">
+                <Label htmlFor="competitor-name" className="text-sm font-medium text-purple-200">
+                  Competitor Name
+                </Label>
+                <Input
+                  id="competitor-name"
+                  type="text"
+                  value={calculator.competitorName}
+                  onChange={(e) => calculator.setCompetitorName(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  className="bg-white/10 border-white/20 text-purple-100 placeholder:text-purple-300/60"
+                  placeholder="Enter competitor name (e.g. OrbitFX)"
+                />
+              </div>
+
+              {/* Comparison Date Display */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-purple-200">
+                  Comparison Date
+                </Label>
+                <div className="bg-white/5 border-white/20 text-purple-100 p-3 rounded-lg">
+                  {calculator.comparisonDate}
+                </div>
+              </div>
+
               {/* Trade Amount Input */}
               <div className="space-y-2">
                 <Label htmlFor="trade-amount" className="text-sm font-medium text-purple-200">
