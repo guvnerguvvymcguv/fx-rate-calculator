@@ -52,6 +52,7 @@ export const HistoricalChart: React.FC<HistoricalChartProps> = ({
 
   // Convert canvas Y coordinate to price value (for future price-based interactions)
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
+// @ts-ignore
 const getPriceFromY = (y: number): number => {
   const ratio = (y - padding.top) / chartHeight;
   return (maxPrice + priceBuffer) - ratio * (priceRange + 2 * priceBuffer);
