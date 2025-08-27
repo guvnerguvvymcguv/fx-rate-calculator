@@ -153,25 +153,27 @@ export function MockCalculator() {
               </div>
             </div>
             
-            {/* Row 2: Cost With Competitor, Cost With Us */}
-            <div className="grid grid-cols-2 gap-2">
+            {/* Row 2: Cost With Competitor, [space], Cost With Us */}
+            <div className="grid grid-cols-3 gap-2">
               <div className="space-y-1">
                 <p className="text-xs text-purple-300">Cost With Competitor</p>
                 <p className="text-sm font-bold text-red-400">369276.22</p>
               </div>
-              <div className="space-y-1 text-center">
+              <div></div>
+              <div className="space-y-1 text-right">
                 <p className="text-xs text-purple-300">Cost With Us</p>
                 <p className="text-sm font-bold text-green-400">369003.69</p>
               </div>
             </div>
             
-            {/* Row 3: Savings Per Trade, Annual Savings */}
-            <div className="grid grid-cols-2 gap-2">
+            {/* Row 3: Savings Per Trade, [space], Annual Savings */}
+            <div className="grid grid-cols-3 gap-2">
               <div className="space-y-1">
                 <p className="text-xs text-purple-300">Savings Per Trade</p>
                 <p className="text-sm font-bold text-green-400">272.53</p>
               </div>
-              <div className="space-y-1 text-center">
+              <div></div>
+              <div className="space-y-1 text-right">
                 <p className="text-xs text-purple-300">Annual Savings</p>
                 <p className="text-base font-bold text-green-400">14171.49</p>
               </div>
