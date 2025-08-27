@@ -8,7 +8,7 @@ export function MockCalculator() {
   
   return (
     <Card className="bg-white/10 backdrop-blur-md border-white/20 rounded-xl shadow-xl max-w-lg mx-auto" style={{ color: '#C7B3FF' }}>
-      <CardHeader className="text-center pb-4">
+      <CardHeader className="text-center pb-3">
         <div className="flex items-center justify-center gap-2 mb-2">
           <TrendingUp className="h-6 w-6 text-purple-400" />
           <CardTitle className="text-lg font-bold bg-gradient-to-r from-purple-300 to-blue-300 bg-clip-text text-transparent">
@@ -20,7 +20,7 @@ export function MockCalculator() {
         </CardDescription>
       </CardHeader>
       
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3">
         {/* Currency Pair */}
         <div className="space-y-1">
           <Label className="text-xs text-purple-200">Currency Pair</Label>
@@ -30,75 +30,76 @@ export function MockCalculator() {
         </div>
 
         {/* Live Rate Display */}
-        <div className="p-3 bg-white/5 rounded-lg border border-white/20">
+        <div className="p-2 bg-white/5 rounded-lg border border-white/20">
           <div className="flex items-center gap-2 mb-1">
             <TrendingUp className="h-4 w-4 text-green-400" />
             <Label className="text-xs text-purple-200">Live Market Rate: GBP/USD</Label>
           </div>
-          <div className="text-lg font-bold text-green-400">
+          <div className="text-base font-bold text-green-400">
             1.3556
           </div>
         </div>
         
-        {/* Your Rate */}
-        <div className="space-y-1">
-          <div className="flex items-center justify-between">
+        {/* Your Rate, Competitor Rate, Historical Rate Button - Row 1 */}
+        <div className="grid grid-cols-3 gap-2">
+          <div className="space-y-1">
             <Label className="text-xs text-purple-200">Your Rate</Label>
+            <div className="bg-white/10 border-white/20 text-purple-100 p-1.5 rounded-lg text-sm">
+              1.355
+            </div>
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs text-purple-200">Competitor</Label>
+            <div className="bg-white/10 border-white/20 text-purple-100 p-1.5 rounded-lg text-sm">
+              1.354
+            </div>
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs text-purple-200">Historical</Label>
             <Button
               variant="outline"
               size="sm"
-              className="border-white/20 text-purple-200 hover:bg-white/10 text-xs h-6 px-2"
+              className="border-white/20 text-purple-200 hover:bg-white/10 text-xs h-8 w-full px-1"
             >
-              Historical Rate
+              Rate
             </Button>
           </div>
-          <div className="bg-white/10 border-white/20 text-purple-100 p-2 rounded-lg text-sm">
-            1.355
+        </div>
+
+        {/* Competitor Name and Comparison Date - Row 2 */}
+        <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-1">
+            <Label className="text-xs text-purple-200">Competitor Name</Label>
+            <div className="bg-white/10 border-white/20 text-purple-100 p-1.5 rounded-lg text-sm">
+              ExampleBroker.com
+            </div>
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs text-purple-200">Comparison Date</Label>
+            <div className="bg-white/5 border-white/20 text-purple-100 p-1.5 rounded-lg text-sm">
+              {today}
+            </div>
           </div>
         </div>
 
-        {/* Competitor Rate */}
-        <div className="space-y-1">
-          <Label className="text-xs text-purple-200">Competitor Rate</Label>
-          <div className="bg-white/10 border-white/20 text-purple-100 p-2 rounded-lg text-sm">
-            1.354
+        {/* Amount to Buy and Trades Per Year - Row 3 */}
+        <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-1">
+            <Label className="text-xs text-purple-200">Amount to Buy</Label>
+            <div className="bg-white/10 border-white/20 text-purple-100 p-1.5 rounded-lg text-sm">
+              500000
+            </div>
           </div>
-        </div>
-
-        {/* Competitor Name */}
-        <div className="space-y-1">
-          <Label className="text-xs text-purple-200">Competitor Name</Label>
-          <div className="bg-white/10 border-white/20 text-purple-100 p-2 rounded-lg text-sm">
-            ExampleBroker.com
-          </div>
-        </div>
-
-        {/* Comparison Date */}
-        <div className="space-y-1">
-          <Label className="text-xs text-purple-200">Comparison Date</Label>
-          <div className="bg-white/5 border-white/20 text-purple-100 p-2 rounded-lg text-sm">
-            {today}
-          </div>
-        </div>
-
-        {/* Amount to Buy */}
-        <div className="space-y-1">
-          <Label className="text-xs text-purple-200">Amount to Buy</Label>
-          <div className="bg-white/10 border-white/20 text-purple-100 p-2 rounded-lg text-sm">
-            500000
-          </div>
-        </div>
-
-        {/* Trades Per Year */}
-        <div className="space-y-1">
-          <Label className="text-xs text-purple-200">Trades Per Year</Label>
-          <div className="bg-white/10 border-white/20 text-purple-100 p-2 rounded-lg text-sm">
-            52
+          <div className="space-y-1">
+            <Label className="text-xs text-purple-200">Trades Per Year</Label>
+            <div className="bg-white/10 border-white/20 text-purple-100 p-1.5 rounded-lg text-sm">
+              52
+            </div>
           </div>
         </div>
 
         {/* Pip Selection */}
-        <div className="p-3 bg-white/5 rounded-lg border border-white/20">
+        <div className="p-2 bg-white/5 rounded-lg border border-white/20">
           <Label className="text-xs text-purple-200 mb-2 block">
             Inflate Your Margin (Pips)
           </Label>
@@ -128,47 +129,52 @@ export function MockCalculator() {
           Calculate Savings
         </Button>
 
-        {/* Results Display */}
-        <div className="p-4 bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-lg border border-purple-400/30">
-          <h3 className="text-sm font-semibold text-purple-200 mb-3 flex items-center gap-2">
+        {/* Results Display - Compact Layout */}
+        <div className="p-3 bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-lg border border-purple-400/30">
+          <h3 className="text-sm font-semibold text-purple-200 mb-2 flex items-center gap-2">
             <DollarSign className="h-4 w-4" />
             Calculation Results
           </h3>
           
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <p className="text-xs text-purple-300">Price Difference</p>
-              <p className="text-sm font-bold text-purple-100">+0.0010</p>
+          <div className="space-y-2">
+            {/* Row 1: Price Difference, Pips, Percentage Savings */}
+            <div className="grid grid-cols-3 gap-2">
+              <div className="space-y-1">
+                <p className="text-xs text-purple-300">Price Difference</p>
+                <p className="text-sm font-bold text-purple-100">+0.0010</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs text-purple-300">Pips</p>
+                <p className="text-sm font-bold text-purple-100">10.0 pips</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs text-purple-300">% Savings</p>
+                <p className="text-sm font-bold text-green-400">0.07%</p>
+              </div>
             </div>
             
-            <div className="space-y-1">
-              <p className="text-xs text-purple-300">Pips</p>
-              <p className="text-sm font-bold text-purple-100">10.0 pips</p>
+            {/* Row 2: Cost With Competitor, Cost With Us */}
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <p className="text-xs text-purple-300">Cost With Competitor</p>
+                <p className="text-sm font-bold text-red-400">369276.22</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs text-purple-300">Cost With Us</p>
+                <p className="text-sm font-bold text-green-400">369003.69</p>
+              </div>
             </div>
             
-            <div className="space-y-1">
-              <p className="text-xs text-purple-300">Cost With Competitor</p>
-              <p className="text-sm font-bold text-red-400">369276.22</p>
-            </div>
-            
-            <div className="space-y-1">
-              <p className="text-xs text-purple-300">Cost With Us</p>
-              <p className="text-sm font-bold text-green-400">369003.69</p>
-            </div>
-            
-            <div className="space-y-1">
-              <p className="text-xs text-purple-300">Savings Per Trade</p>
-              <p className="text-sm font-bold text-green-400">272.53</p>
-            </div>
-            
-            <div className="space-y-1">
-              <p className="text-xs text-purple-300">Annual Savings</p>
-              <p className="text-lg font-bold text-green-400">14171.49</p>
-            </div>
-            
-            <div className="space-y-1 col-span-2">
-              <p className="text-xs text-purple-300">Percentage Savings</p>
-              <p className="text-sm font-bold text-green-400">0.07%</p>
+            {/* Row 3: Savings Per Trade, Annual Savings */}
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <p className="text-xs text-purple-300">Savings Per Trade</p>
+                <p className="text-sm font-bold text-green-400">272.53</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs text-purple-300">Annual Savings</p>
+                <p className="text-base font-bold text-green-400">14171.49</p>
+              </div>
             </div>
           </div>
         </div>
