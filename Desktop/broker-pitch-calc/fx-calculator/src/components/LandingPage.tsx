@@ -91,22 +91,7 @@ export default function LandingPage() {
     return days;
   };
 
-  const handleDateSelect = (day: number) => {
-    const newDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
-    setSelectedDate(newDate);
-  };
-
-  const navigateMonth = (direction: 'prev' | 'next') => {
-    setCurrentMonth(prev => {
-      const newMonth = new Date(prev);
-      if (direction === 'prev') {
-        newMonth.setMonth(prev.getMonth() - 1);
-      } else {
-        newMonth.setMonth(prev.getMonth() + 1);
-      }
-      return newMonth;
-    });
-  };
+  // Disabled for demo - functions removed
 
   const availablePairs = ['GBPUSD', 'GBPEUR', 'EURUSD'];
   const timeframes = ['1D', '5D', '1M', '3M'];
@@ -209,12 +194,12 @@ export default function LandingPage() {
                       {timeframes.map((tf) => (
                         <button
                           key={tf}
-                          onClick={() => setSelectedTimeframe(tf)}
-                          className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-                            selectedTimeframe === tf
+                          className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors cursor-not-allowed ${
+                            tf === '5D'
                               ? 'bg-purple-600 text-white'
                               : 'bg-white/10 text-purple-200 hover:bg-white/20'
                           }`}
+                          disabled={tf !== '5D'}
                         >
                           {tf}
                         </button>
@@ -254,10 +239,10 @@ export default function LandingPage() {
                         {/* Month Navigation */}
                         <div className="flex items-center justify-between mb-3">
                           <Button
-                            onClick={() => navigateMonth('prev')}
                             variant="ghost"
                             size="sm"
-                            className="text-purple-200 hover:bg-white/10"
+                            className="text-purple-200 hover:bg-white/10 cursor-not-allowed"
+                            disabled
                           >
                             <ChevronLeft className="h-4 w-4" />
                           </Button>
@@ -265,10 +250,10 @@ export default function LandingPage() {
                             {currentMonth.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
                           </span>
                           <Button
-                            onClick={() => navigateMonth('next')}
                             variant="ghost"
                             size="sm"
-                            className="text-purple-200 hover:bg-white/10"
+                            className="text-purple-200 hover:bg-white/10 cursor-not-allowed"
+                            disabled
                           >
                             <ChevronRight className="h-4 w-4" />
                           </Button>
@@ -287,19 +272,18 @@ export default function LandingPage() {
                           {generateCalendarDays().map((day, index) => (
                             <div key={index} className="relative">
                               {day ? (
-                                <button
-                                  onClick={() => handleDateSelect(day)}
-                                  className={`w-full p-2 text-center rounded transition-colors ${
+                                <div
+                                  className={`w-full p-2 text-center rounded transition-colors cursor-not-allowed ${
                                     selectedDate && 
                                     selectedDate.getDate() === day && 
                                     selectedDate.getMonth() === currentMonth.getMonth() &&
                                     selectedDate.getFullYear() === currentMonth.getFullYear()
                                       ? 'bg-purple-600 text-white'
-                                      : 'text-purple-200 hover:bg-white/10'
+                                      : 'text-purple-200'
                                   }`}
                                 >
                                   {day}
-                                </button>
+                                </div>
                               ) : (
                                 <div className="p-2"></div>
                               )}
