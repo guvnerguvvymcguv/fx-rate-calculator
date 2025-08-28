@@ -21,11 +21,11 @@ export default function LandingPage() {
 
   // State for mock historical interface
   const [selectedPair, setSelectedPair] = useState('GBPUSD');
-  const [selectedTimeframe, setSelectedTimeframe] = useState('5D');
+  const selectedTimeframe = '5D';
   const [showDatePicker, setShowDatePicker] = useState(true);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date(2025, 6, 8)); // July 8, 2025
+  const selectedDate = new Date(2025, 6, 8);
   const [timeInput, setTimeInput] = useState('10:00');
-  const [currentMonth, setCurrentMonth] = useState(new Date(2025, 6)); // July 2025
+  const currentMonth = new Date(2025, 6);
 
   // Handle all the callback functions
   const handleSignUp = (): void => {
@@ -90,8 +90,6 @@ export default function LandingPage() {
 
     return days;
   };
-
-  // Disabled for demo - functions removed
 
   const availablePairs = ['GBPUSD', 'GBPEUR', 'EURUSD'];
   const timeframes = ['1D', '5D', '1M', '3M'];
@@ -273,7 +271,7 @@ export default function LandingPage() {
                             <div key={index} className="relative">
                               {day ? (
                                 <div
-                                  className={`w-full p-2 text-center rounded transition-colors cursor-not-allowed ${
+                                  className={`w-full p-2 text-center rounded cursor-not-allowed ${
                                     selectedDate && 
                                     selectedDate.getDate() === day && 
                                     selectedDate.getMonth() === currentMonth.getMonth() &&
