@@ -24,7 +24,6 @@ export default function LandingPage() {
   const selectedTimeframe = '5D';
   const [showDatePicker, setShowDatePicker] = useState(true);
   const selectedDate = new Date(2025, 6, 8);
-  const [timeInput, setTimeInput] = useState('10:00');
   const currentMonth = new Date(2025, 6);
 
   // Handle all the callback functions
@@ -308,17 +307,13 @@ export default function LandingPage() {
                             <label className="block text-xs text-purple-300 mb-1">
                               Time (e.g., 13:00, 1:00 PM, 1pm)
                             </label>
-                            <input
-                              type="text"
-                              value={timeInput}
-                              onChange={(e) => setTimeInput(e.target.value)}
-                              placeholder="13:00"
-                              className="w-full p-2 bg-white/10 border border-white/20 rounded text-purple-200 placeholder-purple-400"
-                            />
+                              <div className="w-full p-2 bg-white/10 border border-white/20 rounded text-purple-200">
+                              10:00
+                              </div>
                           </div>
 
                           <Button
-                            disabled={!selectedDate || !timeInput}
+                            disabled={!selectedDate}
                             className="w-full bg-purple-600 hover:bg-purple-700 text-white disabled:opacity-50"
                           >
                             <Search className="h-4 w-4 mr-1" />
